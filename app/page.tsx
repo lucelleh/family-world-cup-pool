@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { facts, matches, players } from "./data";
 import {
   calculateLeaderboard,
   getPlayerTeamNames,
   getTeamName,
 } from "./scoring";
+import { formatSASTTime, formatSASTTimeOnly } from "@/lib/time-utils";
 
 type Tab = "pool" | "total" | "teams" | "matches" | "facts";
 
@@ -20,6 +21,21 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("pool");
+
+  const syncAllMatches = async () => {
+    try {
+      const response = await fetch("/api/matches");
+      const data = await response.json();
+      if (data.success) {
+        console.log("Matches synced:", data.matches);
+        // In a production app, you would update state here and refresh the data
+        alert("Match data synced! Refresh the page to see updates.");
+      }
+    } catch (error) {
+      console.error("Error syncing matches:", error);
+      alert("Failed to sync matches");
+    }
+  };
 
   const mainPool = calculateLeaderboard("random");
 
@@ -195,39 +211,73 @@ export default function Home() {
                 emoji="📅"
               />
 
+              <div className="mb-4 flex gap-2">
+                <button
+                  onClick={() => syncAllMatches()}
+                  className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                >
+                  Sync Results
+                </button>
+              </div>
+
               <div className="space-y-3">
-                {matches.map((match) => (
-                  <div
-                    key={match.id}
-                    className="rounded-3xl bg-slate-900 p-4 shadow-lg"
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-slate-400">{match.date}</p>
-                      <p className="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">
-                        {match.status}
+                {matches.map((match) => {
+                  const matchDate = new Date(match.date);
+                  const displayDate = matchDate.toLocaleDateString("en-ZA", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                  });
+                  
+                  return (
+                    <div
+                      key={match.id}
+                      className="rounded-3xl bg-slate-900 p-4 shadow-lg"
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-slate-400">{displayDate}</p>
+                        <p className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          match.status === "Finished"
+                            ? "bg-emerald-500 text-slate-950"
+                            : "bg-slate-800 text-slate-300"
+                        }`}>
+                          {match.status}
+                        </p>
+                      </div>
+
+                      <p className="mt-3 text-lg font-bold">
+                        {getTeamName(match.teamAId)} vs{" "}
+                        {getTeamName(match.teamBId)}
+                      </p>
+
+                      {match.status === "Finished" ? (
+                        <div>
+                          <p className="mt-2 text-2xl font-bold text-emerald-400">
+                            {match.teamAScore} - {match.teamBScore}
+                          </p>
+                          {match.winnerTeamId && (
+                            <p className="mt-1 text-sm text-slate-400">
+                              Winner: {getTeamName(match.winnerTeamId)}
+                            </p>
+                          )}
+                          {!match.winnerTeamId && match.teamAScore === match.teamBScore && (
+                            <p className="mt-1 text-sm text-slate-400">
+                              Draw
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="mt-2 text-lg font-bold text-emerald-400">
+                          {match.time} SAST
+                        </p>
+                      )}
+
+                      <p className="mt-2 text-sm text-slate-400">
+                        {match.stage}
                       </p>
                     </div>
-
-                    <p className="mt-3 text-lg font-bold">
-                      {getTeamName(match.teamAId)} vs{" "}
-                      {getTeamName(match.teamBId)}
-                    </p>
-
-                    {match.status === "Finished" ? (
-                      <p className="mt-2 text-xl font-bold text-emerald-400">
-                        {match.teamAScore} - {match.teamBScore}
-                      </p>
-                    ) : (
-                      <p className="mt-2 font-bold text-emerald-400">
-                        {match.time} SAST
-                      </p>
-                    )}
-
-                    <p className="mt-2 text-sm text-slate-400">
-                      {match.stage}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           )}

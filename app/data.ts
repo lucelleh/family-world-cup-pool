@@ -34,15 +34,15 @@ export type Match = {
 };
 
 export const players: Player[] = [
-  { id: 1, name: "Gerrit" },
-  { id: 2, name: "Anika" },
-  { id: 3, name: "Liam" },
-  { id: 4, name: "Mia" },
-  { id: 5, name: "Johan" },
-  { id: 6, name: "Elmarie" },
-  { id: 7, name: "Ben" },
-  { id: 8, name: "Lisa" },
-  { id: 9, name: "Noah" },
+  { id: 1, name: "Diane" },
+  { id: 2, name: "Elle" },
+  { id: 3, name: "Gerrit" },
+  { id: 4, name: "Jude" },
+  { id: 5, name: "Lucelle" },
+  { id: 6, name: "Mannetjies" },
+  { id: 7, name: "Maritsa" },
+  { id: 8, name: "Wayne" },
+  { id: 9, name: "Xavier" },
 ];
 
 export const teams: Team[] = [
@@ -91,80 +91,88 @@ export const teams: Team[] = [
   { id: 43, name: "Wales" },
   { id: 44, name: "Scotland" },
   { id: 45, name: "Norway" },
+  { id: 46, name: "Ukraine" },
+  { id: 47, name: "Poland" },
+  { id: 48, name: "Turkey" },
+  { id: 49, name: "Jordan" },
+  { id: 50, name: "DR Congo" },
+  { id: 51, name: "Sweden" },
+  { id: 52, name: "Côte d'Ivoire" },
+  { id: 53, name: "Uzbekistan" },
 ];
 
 export const playerTeams: PlayerTeam[] = [
-  // Gerrit
-  { playerId: 1, teamId: 3, teamType: "random" },
+  // Diane
+  { playerId: 1, teamId: 10, teamType: "random" },
+  { playerId: 1, teamId: 13, teamType: "random" },
   { playerId: 1, teamId: 18, teamType: "random" },
-  { playerId: 1, teamId: 12, teamType: "random" },
-  { playerId: 1, teamId: 33, teamType: "random" },
   { playerId: 1, teamId: 30, teamType: "random" },
-  { playerId: 1, teamId: 30, teamType: "favorite" },
+  { playerId: 1, teamId: 36, teamType: "random" },
+  { playerId: 1, teamId: 4, teamType: "favorite" },
 
-  // Anika
-  { playerId: 2, teamId: 2, teamType: "random" },
-  { playerId: 2, teamId: 31, teamType: "random" },
+  // Elle
+  { playerId: 2, teamId: 8, teamType: "random" },
+  { playerId: 2, teamId: 16, teamType: "random" },
   { playerId: 2, teamId: 22, teamType: "random" },
-  { playerId: 2, teamId: 44, teamType: "random" },
-  { playerId: 2, teamId: 35, teamType: "random" },
-  { playerId: 2, teamId: 2, teamType: "favorite" },
+  { playerId: 2, teamId: 46, teamType: "random" },
+  { playerId: 2, teamId: 49, teamType: "random" },
+  { playerId: 2, teamId: 30, teamType: "favorite" },
 
-  // Liam
-  { playerId: 3, teamId: 1, teamType: "random" },
-  { playerId: 3, teamId: 15, teamType: "random" },
-  { playerId: 3, teamId: 26, teamType: "random" },
-  { playerId: 3, teamId: 43, teamType: "random" },
-  { playerId: 3, teamId: 36, teamType: "random" },
-  { playerId: 3, teamId: 1, teamType: "favorite" },
+  // Gerrit
+  { playerId: 3, teamId: 2, teamType: "random" },
+  { playerId: 3, teamId: 12, teamType: "random" },
+  { playerId: 3, teamId: 21, teamType: "random" },
+  { playerId: 3, teamId: 47, teamType: "random" },
+  { playerId: 3, teamId: 40, teamType: "random" },
+  { playerId: 3, teamId: 4, teamType: "favorite" },
 
-  // Mia
-  { playerId: 4, teamId: 10, teamType: "random" },
-  { playerId: 4, teamId: 19, teamType: "random" },
-  { playerId: 4, teamId: 24, teamType: "random" },
-  { playerId: 4, teamId: 39, teamType: "random" },
-  { playerId: 4, teamId: 45, teamType: "random" },
-  { playerId: 4, teamId: 10, teamType: "favorite" },
+  // Jude
+  { playerId: 4, teamId: 4, teamType: "random" },
+  { playerId: 4, teamId: 11, teamType: "random" },
+  { playerId: 4, teamId: 48, teamType: "random" },
+  { playerId: 4, teamId: 44, teamType: "random" },
+  { playerId: 4, teamId: 41, teamType: "random" },
+  { playerId: 4, teamId: 30, teamType: "favorite" },
 
-  // Johan
-  { playerId: 5, teamId: 4, teamType: "random" },
-  { playerId: 5, teamId: 32, teamType: "random" },
-  { playerId: 5, teamId: 23, teamType: "random" },
-  { playerId: 5, teamId: 41, teamType: "random" },
-  { playerId: 5, teamId: 42, teamType: "random" },
+  // Lucelle
+  { playerId: 5, teamId: 1, teamType: "random" },
+  { playerId: 5, teamId: 17, teamType: "random" },
+  { playerId: 5, teamId: 19, teamType: "random" },
+  { playerId: 5, teamId: 29, teamType: "random" },
+  { playerId: 5, teamId: 37, teamType: "random" },
   { playerId: 5, teamId: 4, teamType: "favorite" },
 
-  // Elmarie
-  { playerId: 6, teamId: 5, teamType: "random" },
-  { playerId: 6, teamId: 13, teamType: "random" },
-  { playerId: 6, teamId: 21, teamType: "random" },
-  { playerId: 6, teamId: 28, teamType: "random" },
-  { playerId: 6, teamId: 37, teamType: "random" },
-  { playerId: 6, teamId: 5, teamType: "favorite" },
+  // Mannetjies
+  { playerId: 6, teamId: 6, teamType: "random" },
+  { playerId: 6, teamId: 14, teamType: "random" },
+  { playerId: 6, teamId: 20, teamType: "random" },
+  { playerId: 6, teamId: 35, teamType: "random" },
+  { playerId: 6, teamId: 50, teamType: "random" },
+  { playerId: 6, teamId: 4, teamType: "favorite" },
 
-  // Ben
-  { playerId: 7, teamId: 6, teamType: "random" },
-  { playerId: 7, teamId: 14, teamType: "random" },
-  { playerId: 7, teamId: 20, teamType: "random" },
+  // Maritsa
+  { playerId: 7, teamId: 3, teamType: "random" },
+  { playerId: 7, teamId: 38, teamType: "random" },
+  { playerId: 7, teamId: 51, teamType: "random" },
   { playerId: 7, teamId: 27, teamType: "random" },
-  { playerId: 7, teamId: 34, teamType: "random" },
-  { playerId: 7, teamId: 6, teamType: "favorite" },
+  { playerId: 7, teamId: 28, teamType: "random" },
+  { playerId: 7, teamId: 4, teamType: "favorite" },
 
-  // Lisa
+  // Wayne
   { playerId: 8, teamId: 7, teamType: "random" },
-  { playerId: 8, teamId: 16, teamType: "random" },
-  { playerId: 8, teamId: 25, teamType: "random" },
-  { playerId: 8, teamId: 29, teamType: "random" },
-  { playerId: 8, teamId: 38, teamType: "random" },
-  { playerId: 8, teamId: 7, teamType: "favorite" },
+  { playerId: 8, teamId: 15, teamType: "random" },
+  { playerId: 8, teamId: 26, teamType: "random" },
+  { playerId: 8, teamId: 52, teamType: "random" },
+  { playerId: 8, teamId: 53, teamType: "random" },
+  { playerId: 8, teamId: 4, teamType: "favorite" },
 
-  // Noah
-  { playerId: 9, teamId: 8, teamType: "random" },
-  { playerId: 9, teamId: 9, teamType: "random" },
-  { playerId: 9, teamId: 11, teamType: "random" },
-  { playerId: 9, teamId: 17, teamType: "random" },
-  { playerId: 9, teamId: 40, teamType: "random" },
-  { playerId: 9, teamId: 8, teamType: "favorite" },
+  // Xavier
+  { playerId: 9, teamId: 45, teamType: "random" },
+  { playerId: 9, teamId: 5, teamType: "random" },
+  { playerId: 9, teamId: 23, teamType: "random" },
+  { playerId: 9, teamId: 33, teamType: "random" },
+  { playerId: 9, teamId: 24, teamType: "random" },
+  { playerId: 9, teamId: 3, teamType: "favorite" },
 ];
 
 export const matches: Match[] = [
