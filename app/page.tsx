@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { facts, matches, players } from "./data";
+import { facts, players, type Match } from "./data";
 import {
   calculateLeaderboard,
   getPlayerTeamNames,
@@ -21,19 +21,45 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("pool");
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Fetch matches on component mount
+  useEffect(() => {
+    const loadMatches = async () => {
+      try {
+        const response = await fetch("/api/matches");
+        const data = await response.json();
+        if (data.success && data.matches) {
+          setMatches(data.matches);
+          console.log("Matches loaded from API:", data.matches);
+        }
+      } catch (error) {
+        console.error("Error fetching matches:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadMatches();
+  }, []);
 
   const syncAllMatches = async () => {
+    setIsSyncing(true);
     try {
       const response = await fetch("/api/matches");
       const data = await response.json();
-      if (data.success) {
+      if (data.success && data.matches) {
+        setMatches(data.matches);
         console.log("Matches synced:", data.matches);
-        // In a production app, you would update state here and refresh the data
-        alert("Match data synced! Refresh the page to see updates.");
+        alert("Match data synced successfully!");
       }
     } catch (error) {
       console.error("Error syncing matches:", error);
       alert("Failed to sync matches");
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -214,9 +240,14 @@ export default function Home() {
               <div className="mb-4 flex gap-2">
                 <button
                   onClick={() => syncAllMatches()}
-                  className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                  disabled={isSyncing}
+                  className={`rounded-2xl px-4 py-2 text-sm font-medium text-white transition ${
+                    isSyncing
+                      ? "bg-slate-600 cursor-not-allowed"
+                      : "bg-emerald-600 hover:bg-emerald-700"
+                  }`}
                 >
-                  Sync Results
+                  {isSyncing ? "Syncing..." : "Sync Results"}
                 </button>
               </div>
 
