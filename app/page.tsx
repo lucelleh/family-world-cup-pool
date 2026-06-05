@@ -277,8 +277,8 @@ export default function Home() {
                       </div>
 
                       <p className="mt-3 text-lg font-bold">
-                        {getTeamName(match.teamAId)} vs{" "}
-                        {getTeamName(match.teamBId)}
+                        {getTeamName(match.teamAId, match.teamAName)} vs{" "}
+                        {getTeamName(match.teamBId, match.teamBName)}
                       </p>
 
                       {match.status === "Finished" ? (
@@ -288,7 +288,10 @@ export default function Home() {
                           </p>
                           {match.winnerTeamId && (
                             <p className="mt-1 text-sm text-slate-400">
-                              Winner: {getTeamName(match.winnerTeamId)}
+                              Winner: {getTeamName(
+                                match.winnerTeamId,
+                                match.winnerTeamId === match.teamAId ? match.teamAName : match.teamBName
+                              )}
                             </p>
                           )}
                           {!match.winnerTeamId && match.teamAScore === match.teamBScore && (

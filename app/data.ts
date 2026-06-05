@@ -20,6 +20,8 @@ export type Match = {
   time: string;
   teamAId: number;
   teamBId: number;
+  teamAName?: string;
+  teamBName?: string;
   teamAScore: number | null;
   teamBScore: number | null;
   stage:

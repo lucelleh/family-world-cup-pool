@@ -44,6 +44,8 @@ function parseMatchData(apiMatches: any[]): Partial<Match>[] {
     }),
     teamAId: match.homeTeam.id,
     teamBId: match.awayTeam.id,
+    teamAName: match.homeTeam.name,
+    teamBName: match.awayTeam.name,
     teamAScore: match.score.fullTime.home,
     teamBScore: match.score.fullTime.away,
     stage: match.stage,

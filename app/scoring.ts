@@ -76,7 +76,13 @@ export function calculateMatchPoints(match: Match, teamId: number) {
   return 2 + bonusPointsByStage[match.stage];
 }
 
-export function getTeamName(teamId: number) {
+export function getTeamName(teamId: number, teamName?: string) {
+  // If team name is provided from API, use it
+  if (teamName) {
+    return teamName;
+  }
+  
+  // Otherwise, look up in local teams array
   return teams.find((team) => team.id === teamId)?.name ?? "Unknown team";
 }
 
