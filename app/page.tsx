@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { facts, players, type Match } from "./data";
 import {
   calculateLeaderboard,
@@ -63,15 +63,15 @@ export default function Home() {
     }
   };
 
-  const mainPool = calculateLeaderboard("random");
+  const mainPool = useMemo(() => calculateLeaderboard("random", matches), [matches]);
 
-  const combinedPool = calculateLeaderboard("combined").sort((a, b) => {
+  const combinedPool = useMemo(() => calculateLeaderboard("combined", matches).sort((a, b) => {
     if (b.randomPoints !== a.randomPoints) {
       return b.randomPoints - a.randomPoints;
     }
 
     return b.totalPoints - a.totalPoints;
-  });
+  }), [matches]);
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">

@@ -1,6 +1,6 @@
-import { matches, players, playerTeams, teams, type Match } from "./data";
+import { players, playerTeams, teams, type Match } from "./data";
 
-export function calculateLeaderboard(mode: "random" | "combined") {
+export function calculateLeaderboard(mode: "random" | "combined", matches: Match[] = []) {
   return players
     .map((player) => {
       const randomTeamIds = playerTeams
@@ -14,12 +14,12 @@ export function calculateLeaderboard(mode: "random" | "combined") {
         .map((item) => item.teamId);
 
       const randomPoints = randomTeamIds.reduce(
-        (total, teamId) => total + calculateTeamPoints(teamId),
+        (total, teamId) => total + calculateTeamPoints(teamId, matches),
         0,
       );
 
       const favoritePoints = favoriteTeamIds.reduce(
-        (total, teamId) => total + calculateTeamPoints(teamId),
+        (total, teamId) => total + calculateTeamPoints(teamId, matches),
         0,
       );
 
@@ -34,7 +34,7 @@ export function calculateLeaderboard(mode: "random" | "combined") {
     .sort((a, b) => b.totalPoints - a.totalPoints);
 }
 
-export function calculateTeamPoints(teamId: number) {
+export function calculateTeamPoints(teamId: number, matches: Match[] = []) {
   return matches.reduce((total, match) => {
     if (match.status !== "Finished") {
       return total;
