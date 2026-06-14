@@ -7,8 +7,6 @@ import { type Match } from "@/app/data";
  */
 export async function fetchMatchesFromAPI(): Promise<Match[]> {
   try {
-    // Using football-data.org free API
-    // Competition code 'WC' is for World Cup
     const response = await fetch("https://api.football-data.org/v4/competitions/WC/matches", {
       headers: {
         "X-Auth-Token": process.env.FOOTBALL_DATA_API_KEY || "",
@@ -35,7 +33,6 @@ function parseMatchData(apiMatches: any[]): Match[] {
   if (!apiMatches) return [];
 
   return apiMatches.map((match) => {
-    // Force string IDs from API into numbers so strict comparison works
     const teamAId = Number(match.homeTeam.id);
     const teamBId = Number(match.awayTeam.id);
     const teamAScore = match.score?.fullTime?.home !== undefined ? match.score.fullTime.home : null;
@@ -53,7 +50,7 @@ function parseMatchData(apiMatches: any[]): Match[] {
     else if (match.stage === "SEMI_FINALS") stage = "Semi-Final";
     else if (match.stage === "FINAL") stage = "Final";
 
-    // 3. Dynamically compute winnerTeamId for your scoring logic loop
+    // 3. Compute winnerTeamId dynamically for scoring
     let winnerTeamId: number | null = null;
     if (status === "Finished" && teamAScore !== null && teamBScore !== null) {
       if (teamAScore > teamBScore) {
@@ -127,5 +124,4 @@ export async function syncMatchData(matchId: number): Promise<Match | null> {
     console.error("Error syncing match data:", error);
     return null;
   }
-  
 }
