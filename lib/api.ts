@@ -1,104 +1,82 @@
-import { type Match } from "@/app/data";
+import { type Match } from "@/app/data"; // Adjust path if your data.ts is elsewhere
 
-/**
- * Fetch match data from football-data.org API
- * Free tier available: https://www.football-data.org/
- * 
- * For 2026 World Cup in North America, use competition code: WC
- */
-export async function fetchMatchesFromAPI(): Promise<Partial<Match>[]> {
+const API_URL = "https://api.football-data.org/v4/competitions/WC/matches";
+const API_TOKEN = process.env.FOOTBALL_API_TOKEN || "YOUR_FALLBACK_TOKEN_HERE";
+
+export async function fetchMatchesFromAPI(): Promise<Match[]> {
   try {
-    // Using football-data.org free API
-    // Competition code 'WC' is for World Cup
-    const response = await fetch("https://api.football-data.org/v4/competitions/WC/matches", {
+    const response = await fetch(API_URL, {
       headers: {
-        "X-Auth-Token": process.env.FOOTBALL_DATA_API_KEY || "",
+        "X-Auth-Token": API_TOKEN,
       },
+      next: { revalidate: 300 }, // Cache for 5 minutes
     });
 
     if (!response.ok) {
-      console.warn(`API fetch failed: ${response.status}. Using mock data.`);
-      return getMockMatches();
+      throw new Error(`API responded with status: ${response.status}`);
     }
 
     const data = await response.json();
-    return parseMatchData(data.matches);
+    
+    if (!data.matches) return [];
+
+    // Map the external API structure to match your exact local TypeScript Match type
+    return data.matches.map((apiMatch: any) => {
+      const teamAId = Number(apiMatch.homeTeam.id);
+      const teamBId = Number(apiMatch.awayTeam.id);
+      const teamAScore = apiMatch.score?.fullTime?.home !== undefined ? apiMatch.score.fullTime.home : null;
+      const teamBScore = apiMatch.score?.fullTime?.away !== undefined ? apiMatch.score.fullTime.away : null;
+
+      // 1. Normalize Status: API returns "FINISHED", local expects "Finished"
+      const status: "Upcoming" | "Finished" = 
+        apiMatch.status === "FINISHED" ? "Finished" : "Upcoming";
+
+      // 2. Normalize Stage: API returns "GROUP_STAGE", local expects "Group Stage"
+      let stage: Match["stage"] = "Group Stage";
+      if (apiMatch.stage === "LAST_32") stage = "Round of 32";
+      else if (apiMatch.stage === "LAST_16") stage = "Round of 16";
+      else if (apiMatch.stage === "QUARTER_FINALS") stage = "Quarter-Final";
+      else if (apiMatch.stage === "SEMI_FINALS") stage = "Semi-Final";
+      else if (apiMatch.stage === "FINAL") stage = "Final";
+
+      // 3. Dynamically compute winnerTeamId for the scoring file
+      let winnerTeamId: number | null = null;
+      if (status === "Finished" && teamAScore !== null && teamBScore !== null) {
+        if (teamAScore > teamBScore) {
+          winnerTeamId = teamAId;
+        } else if (teamBScore > teamAScore) {
+          winnerTeamId = teamBId;
+        }
+      }
+
+      return {
+        id: Number(apiMatch.id),
+        date: apiMatch.utcDate ? apiMatch.utcDate.split("T")[0] : "",
+        time: apiMatch.utcDate ? apiMatch.utcDate.split("T")[1].substring(0, 5) : "",
+        teamAId,
+        teamBId,
+        teamAName: apiMatch.homeTeam.name,
+        teamBName: apiMatch.awayTeam.name,
+        teamAScore,
+        teamBScore,
+        stage,
+        status,
+        winnerTeamId,
+      };
+    });
   } catch (error) {
-    console.warn("Error fetching from football-data.org, using mock data:", error);
-    return getMockMatches();
+    console.error("Error inside fetchMatchesFromAPI:", error);
+    return [];
   }
 }
 
-/**
- * Parse matches from football-data.org format
- */
-function parseMatchData(apiMatches: any[]): Partial<Match>[] {
-  return apiMatches.map((match) => ({
-    id: match.id,
-    date: match.utcDate,
-    time: new Date(match.utcDate).toLocaleTimeString("en-ZA", {
-      timeZone: "Africa/Johannesburg",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }),
-    teamAId: match.homeTeam.id,
-    teamBId: match.awayTeam.id,
-    teamAName: match.homeTeam.name,
-    teamBName: match.awayTeam.name,
-    teamAScore: match.score.fullTime.home,
-    teamBScore: match.score.fullTime.away,
-    stage: match.stage,
-    status: match.status === "FINISHED" ? "Finished" : "Upcoming",
-    winnerTeamId:
-      match.score.fullTime.home > match.score.fullTime.away
-        ? match.homeTeam.id
-        : match.score.fullTime.away > match.score.fullTime.home
-          ? match.awayTeam.id
-          : null,
-  }));
-}
-
-/**
- * Mock match data for development/fallback
- */
-function getMockMatches(): Partial<Match>[] {
-  return [
-    {
-      id: 1,
-      date: "2026-06-01",
-      time: "15:00",
-      teamAId: 30,
-      teamBId: 16,
-      teamAScore: null,
-      teamBScore: null,
-      stage: "Group Stage",
-      status: "Upcoming",
-      winnerTeamId: null,
-    },
-  ];
-}
-
-/**
- * Update a single match with new data from the API
- */
-export async function syncMatchData(matchId: number): Promise<Partial<Match> | null> {
+export async function syncMatchData(matchId: number): Promise<Match | null> {
   try {
-    const response = await fetch(
-      `https://api.football-data.org/v4/matches/${matchId}`,
-      {
-        headers: {
-          "X-Auth-Token": process.env.FOOTBALL_DATA_API_KEY || "",
-        },
-      }
-    );
-
-    if (!response.ok) return null;
-
-    const match = await response.json();
-    return parseMatchData([match.match])[0];
+    const allMatches = await fetchMatchesFromAPI();
+    const found = allMatches.find(m => m.id === matchId);
+    return found || null;
   } catch (error) {
-    console.error("Error syncing match data:", error);
+    console.error(`Error syncing single match ${matchId}:`, error);
     return null;
   }
 }
